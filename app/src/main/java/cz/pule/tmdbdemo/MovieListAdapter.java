@@ -24,6 +24,8 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     private ArrayList<MovieDetails> dataSet;
     private ImageLoader imageLoader;
 
+    private MovieListLoader movieListLoader;
+
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -74,6 +76,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 
         Log.d(TAG, "Element " + position + " set - " + dataSet.get(position).getTitle());
+        if(movieListLoader != null) movieListLoader.compareMaxViewHolderPosition(position);
 
         viewHolder.getTextView().setText(dataSet.get(position).getTitle());
         viewHolder.getNetworkImageView().setDefaultImageResId(R.drawable.no_poster);
@@ -94,14 +97,16 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     }
 
     public void addItemToList(MovieDetails details){
-
         dataSet.add(details);
         notifyItemInserted(dataSet.size() - 1);
     }
 
     public void clearList(){
-
         dataSet.clear();
         notifyDataSetChanged(); // notifyItemRangeRemoved?
+    }
+
+    public void setMovieListLoader(MovieListLoader movieListLoader) {
+        this.movieListLoader = movieListLoader;
     }
 }

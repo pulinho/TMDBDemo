@@ -9,8 +9,8 @@
     <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/networkImageView"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:adjustViewBounds="true"/>
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"/>
 
     <TextView
         android:id="@+id/myTextView"

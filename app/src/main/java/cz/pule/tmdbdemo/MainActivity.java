@@ -7,9 +7,9 @@ import android.support.v7.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView mRecyclerView;
-    private MovieListAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView recyclerView;
+    private MovieListAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
     private MovieListLoader movieListLoader;
 
     @Override
@@ -19,14 +19,17 @@ public class MainActivity extends AppCompatActivity {
 
         VolleySingleton.getInstance(getApplicationContext()); //init
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.myRecyclerView);
+        recyclerView = (RecyclerView) findViewById(R.id.myRecyclerView);
         
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
 
-        mAdapter = new MovieListAdapter();
-        mRecyclerView.setAdapter(mAdapter);
+        adapter = new MovieListAdapter();
+        recyclerView.setAdapter(adapter);
 
-        movieListLoader = new MovieListLoader(mAdapter);
+        movieListLoader = new MovieListLoader(adapter);
+        adapter.setMovieListLoader(movieListLoader);
+
+        movieListLoader.newQuery(1);
     }
 }

@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_toggle_log:
+            case R.id.menu_day_count:
                 showDaysPickDialog();
                 return true;
             default:
@@ -86,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
                         SeekBar sb = (SeekBar) layout.findViewById(R.id.dialog_seekbar);
                         movieListLoader.newQuery(sb.getProgress() + 1);
-                        //TODO: set also in appbar
                     }
                 })
                 .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {

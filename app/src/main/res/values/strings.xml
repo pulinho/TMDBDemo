@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">TMDBDemo</string>
+    <string name="days">days</string>
+    <string name="dialog_title">Select number of days</string>
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_cancel">Cancel</string>
 </resources>

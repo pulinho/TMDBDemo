@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new MovieListAdapter();
+        adapter = new MovieListAdapter(this);
         recyclerView.setAdapter(adapter);
 
         movieListLoader = new MovieListLoader(adapter);

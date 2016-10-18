@@ -1,5 +1,8 @@
 package cz.pule.tmdbdemo;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +28,8 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     private ImageLoader imageLoader;
 
     private MovieListLoader movieListLoader;
+    private Context context;
+    private RecyclerView recyclerView;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -35,13 +40,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
 
         public ViewHolder(View v) {
             super(v);
-            // Define click listener for the ViewHolder's View.
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
-                }
-            });
             textView = (TextView) v.findViewById(R.id.myTextView);
             networkImageView = (NetworkImageView) v.findViewById(R.id.networkImageView);
         }
@@ -56,9 +54,12 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MovieListAdapter() {
+    public MovieListAdapter(Context context) {
+        this.context = context;
+        this.recyclerView = (RecyclerView)((Activity)context).findViewById(R.id.myRecyclerView);
+
         dataSet = new ArrayList<>();
-        imageLoader = VolleySingleton.getInstance(null).getImageLoader();
+        imageLoader = VolleySingleton.getInstance(context).getImageLoader();
     }
 
     // Create new views (invoked by the layout manager)
@@ -67,6 +68,15 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
 
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item, parent, false);
+
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int itemPosition = recyclerView.getChildLayoutPosition(view);
+                Log.d(TAG, "item " + itemPosition + " clicked");
+                viewMovieDetails(itemPosition);
+            }
+        });
 
         return new ViewHolder(v);
     }
@@ -108,5 +118,13 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
 
     public void setMovieListLoader(MovieListLoader movieListLoader) {
         this.movieListLoader = movieListLoader;
+    }
+
+    private void viewMovieDetails(int position){
+        Intent intent = new Intent(context, DisplayMovieActivity.class);
+
+        intent.putExtra("IMG_URL", IMG_BASE_URL + dataSet.get(position).getPosterPath());
+
+        context.startActivity(intent);
     }
 }

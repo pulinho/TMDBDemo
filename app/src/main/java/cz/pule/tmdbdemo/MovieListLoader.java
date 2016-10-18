@@ -11,7 +11,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * Created by pule on 16.10.2016.
@@ -31,6 +35,9 @@ public class MovieListLoader {
     private int movieDetailsRequestsSuccess = 0;
     private int totalPages = 1;
     private int page = 0;
+    private int days = 0;
+    private String startDateString = "";
+    private String endDateString = "";
 
     public MovieListLoader(MovieListAdapter adapter){
         this.adapter = adapter;
@@ -38,21 +45,38 @@ public class MovieListLoader {
 
     public void newQuery(int days){
 
+        Log.d(TAG, "newQuery: " + days);
+
+        if(this.days == days) return;
+        this.days = days;
+
+        //todo: ALSO FOR LIST
+        if(pendingMovieDetailsRequest != null){
+            pendingMovieDetailsRequest.cancel();
+            pendingMovieDetailsRequest = null; //?
+        }
+
         adapter.clearList();
         idList.clear();
 
         movieDetailsRequestsSent = 0;
         movieDetailsRequestsSuccess = 0;
 
-        if(pendingMovieDetailsRequest != null){
-            pendingMovieDetailsRequest.cancel();
-            pendingMovieDetailsRequest = null; //?
-        }
-
         page = 0;
         totalPages = 1;
 
         //set start date
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        df.setTimeZone(tz);
+
+        Calendar calendar=Calendar.getInstance();
+        endDateString = df.format(calendar.getTime());
+
+        calendar.add(Calendar.DAY_OF_YEAR, -days);
+        startDateString = df.format(calendar.getTime());
+
+        Log.d(TAG, "start date: " + startDateString + ", end date: " + endDateString);
 
         loadNextPage();
     }
@@ -64,7 +88,8 @@ public class MovieListLoader {
 
         Log.d(TAG, "Loading page " + page + "/" + totalPages);
 
-        String url = "https://api.themoviedb.org/3/movie/changes?api_key=" + API_KEY + "&page=" + page;
+        String url = "https://api.themoviedb.org/3/movie/changes?api_key=" + API_KEY
+                + "&start_date=" + startDateString + "&end_date=" + endDateString + "&page=" + page;
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -158,5 +183,9 @@ public class MovieListLoader {
     public void compareMaxViewHolderPosition(int pos){
         if(movieDetailsRequestsSuccess - 1 == pos && pendingMovieDetailsRequest == null) //todo ... -10 <= pos
             loadNextPage();
+    }
+
+    public int getDays() {
+        return days;
     }
 }

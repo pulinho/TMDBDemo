@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -67,37 +68,43 @@ public class MainActivity extends AppCompatActivity {
 
     private void showDaysPickDialog() {
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.days_pick_dialog, (ViewGroup) findViewById(R.id.dialog_root_element));
+        final View layout = inflater.inflate(R.layout.days_pick_dialog, (ViewGroup) findViewById(R.id.dialog_root_element));
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setView(layout)
                 .setTitle(R.string.dialog_title)
                 .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // User clicked OK button
+
+                        SeekBar sb = (SeekBar) layout.findViewById(R.id.dialog_seekbar);
+                        movieListLoader.newQuery(sb.getProgress() + 1);
+                        //TODO: set also in appbar
                     }
                 })
                 .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
                     }
                 });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
 
+        int currentDayCount = movieListLoader.getDays();
+
+        final TextView dialogTextView = (TextView)layout.findViewById(R.id.dialog_textview);
+        dialogTextView.setText("" + currentDayCount);
+
         SeekBar sb = (SeekBar)layout.findViewById(R.id.dialog_seekbar);
+        sb.setProgress(currentDayCount - 1);
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
-                Log.d(TAG, "Seekbar progress: " + progress);
+                dialogTextView.setText("" + (progress + 1));
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
     }

@@ -2,6 +2,7 @@ package cz.pule.tmdbdemo;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +30,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(getResources().getBoolean(R.bool.tablet_layout)){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        }
+        else{
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            layoutManager = new LinearLayoutManager(this);
+        }
+
         setContentView(R.layout.activity_main);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.mainToolbar);
         setSupportActionBar(myToolbar);
@@ -36,8 +47,6 @@ public class MainActivity extends AppCompatActivity {
         VolleySingleton.getInstance(getApplicationContext()); //init
 
         recyclerView = (RecyclerView) findViewById(R.id.myRecyclerView);
-        
-        layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         adapter = new MovieListAdapter(this);

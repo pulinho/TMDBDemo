@@ -26,6 +26,9 @@ public class MovieListLoader {
     private static final String TAG = "MovieListLoader";
     private static final String API_KEY = "ae30862a3e8dee879fd475e5b2453527";
 
+    private static final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/";
+    private static final String CHANGES_BASE_URL = "https://api.themoviedb.org/3/movie/changes";
+
     private ArrayList<Integer> idList = new ArrayList<>();
 
     private MovieListAdapter adapter;
@@ -88,8 +91,8 @@ public class MovieListLoader {
 
         Log.d(TAG, "Loading page " + page + "/" + totalPages);
 
-        String url = "https://api.themoviedb.org/3/movie/changes?api_key=" + API_KEY
-                + "&start_date=" + startDateString + "&end_date=" + endDateString + "&page=" + page;
+        String url = CHANGES_BASE_URL + "?api_key=" + API_KEY + "&start_date=" + startDateString
+                   + "&end_date=" + endDateString + "&page=" + page;
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -139,7 +142,7 @@ public class MovieListLoader {
         }
         int movieId = idList.get(movieDetailsRequestsSent);
 
-        String url = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + API_KEY;
+        String url = MOVIE_BASE_URL + movieId + "?api_key=" + API_KEY;
 
         pendingMovieDetailsRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {

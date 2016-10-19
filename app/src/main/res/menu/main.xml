@@ -3,5 +3,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_day_count"
         app:showAsAction="always"
-        android:title="@string/days" />
+        android:title="@string/in_last_day" />
 </menu>

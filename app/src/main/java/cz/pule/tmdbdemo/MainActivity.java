@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private MovieListAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private MovieListLoader movieListLoader;
+    private MenuItem inLastDaysMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +55,24 @@ public class MainActivity extends AppCompatActivity {
         movieListLoader = new MovieListLoader(adapter);
         adapter.setMovieListLoader(movieListLoader);
 
-        movieListLoader.newQuery(1);
+        listQuery(1);
+    }
+
+    private void listQuery(int days){
+
+        if(inLastDaysMenuItem != null){
+            String title = (days == 1) ? getResources().getString(R.string.in_last_day) :
+                                         getResources().getString(R.string.in_last_days, days);
+            inLastDaysMenuItem.setTitle(title);
+        }
+
+        movieListLoader.newQuery(days);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        inLastDaysMenuItem = menu.findItem(R.id.menu_day_count);
         return true;
     }
 
@@ -84,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
 
                         SeekBar sb = (SeekBar) layout.findViewById(R.id.dialog_seekbar);
-                        movieListLoader.newQuery(sb.getProgress() + 1);
+                        listQuery(sb.getProgress() + 1);
                     }
                 })
                 .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {

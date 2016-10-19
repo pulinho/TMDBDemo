@@ -26,7 +26,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
 
     private ArrayList<MovieDetails> dataSet;
     private ImageLoader imageLoader;
-
     private MovieListLoader movieListLoader;
     private Context context;
     private RecyclerView recyclerView;
@@ -123,7 +122,13 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     private void viewMovieDetails(int position){
         Intent intent = new Intent(context, DisplayMovieActivity.class);
 
-        intent.putExtra("IMG_URL", IMG_BASE_URL + dataSet.get(position).getPosterPath());
+        MovieDetails md = dataSet.get(position);
+
+        if(md.getPosterPath().equals("null")) intent.putExtra(DisplayMovieActivity.IMG_URL, "null");
+        else intent.putExtra("IMG_URL", IMG_BASE_URL + md.getPosterPath());
+
+        intent.putExtra(DisplayMovieActivity.TITLE, md.getTitle());
+        intent.putExtra(DisplayMovieActivity.OVERVIEW, md.getOverview());
 
         context.startActivity(intent);
     }

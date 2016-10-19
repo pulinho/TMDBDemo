@@ -175,6 +175,7 @@ public class MovieListLoader {
         try {
             details.setTitle(response.getString("title"));
             details.setPosterPath(response.getString("poster_path"));
+            details.setOverview(response.getString("overview"));
         } catch (JSONException e) {
             e.printStackTrace();
             return;

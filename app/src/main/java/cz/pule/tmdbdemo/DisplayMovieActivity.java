@@ -6,11 +6,16 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
 public class DisplayMovieActivity extends AppCompatActivity {
+
+    public final static String TITLE = "TITLE";
+    public final static String IMG_URL = "IMG_URL";
+    public final static String OVERVIEW = "OVERVIEW";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +38,19 @@ public class DisplayMovieActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        String imgUrl = intent.getStringExtra("IMG_URL");
-        NetworkImageView fullImageView = (NetworkImageView) findViewById(R.id.fullImageView);
-        fullImageView.setImageUrl(imgUrl, imageLoader);
+        String movieTitle = intent.getStringExtra(TITLE);
+        ab.setTitle(movieTitle);
+
+        String imgUrl = intent.getStringExtra(IMG_URL);
+        if(!imgUrl.equals("null")){
+            NetworkImageView fullImageView = (NetworkImageView) findViewById(R.id.fullImageView);
+            fullImageView.setImageUrl(imgUrl, imageLoader);
+        }
+
+        String overview = intent.getStringExtra(OVERVIEW);
+        if(!overview.equals("null")){
+            TextView overviewTextView = (TextView) findViewById(R.id.overView);
+            overviewTextView.setText(overview);
+        }
     }
 }

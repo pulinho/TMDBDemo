@@ -34,8 +34,6 @@ public class DisplayMovieActivity extends AppCompatActivity {
         ab.setDisplayHomeAsUpEnabled(true);
 
 
-        ImageLoader imageLoader = VolleySingleton.getInstance(getApplicationContext()).getImageLoader();
-
         Intent intent = getIntent();
 
         String movieTitle = intent.getStringExtra(TITLE);
@@ -43,6 +41,7 @@ public class DisplayMovieActivity extends AppCompatActivity {
 
         String imgUrl = intent.getStringExtra(IMG_URL);
         if(!imgUrl.equals("null")){
+            ImageLoader imageLoader = VolleySingleton.getInstance(getApplicationContext()).getImageLoader();
             NetworkImageView fullImageView = (NetworkImageView) findViewById(R.id.fullImageView);
             fullImageView.setImageUrl(imgUrl, imageLoader);
         }

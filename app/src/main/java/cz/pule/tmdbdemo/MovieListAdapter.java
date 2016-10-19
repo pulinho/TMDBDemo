@@ -30,9 +30,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     private Context context;
     private RecyclerView recyclerView;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
         private final NetworkImageView networkImageView;
@@ -52,7 +49,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
         }
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
     public MovieListAdapter(Context context) {
         this.context = context;
         this.recyclerView = (RecyclerView)((Activity)context).findViewById(R.id.myRecyclerView);
@@ -61,7 +57,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
         imageLoader = VolleySingleton.getInstance(context).getImageLoader();
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public MovieListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -80,17 +75,21 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
         return new ViewHolder(v);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 
         Log.d(TAG, "Element " + position + " set - " + dataSet.get(position).getTitle());
-        if(movieListLoader != null) movieListLoader.compareMaxViewHolderPosition(position);
+
+        if(movieListLoader != null) movieListLoader.notifyViewHolderPosition(position);
 
         viewHolder.getTextView().setText(dataSet.get(position).getTitle());
         viewHolder.getNetworkImageView().setDefaultImageResId(R.drawable.no_poster);
 
         String posterPath = dataSet.get(position).getPosterPath();
+
+        //next line should accomplish that requests for 'null' posters won't be sent. But then the
+        //'no_poster' image was replaced with some random other poster for some reason
+
         //if(posterPath.equals("null")) return;
 
         String imgUrl = IMG_BASE_URL + posterPath;
@@ -99,7 +98,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
         viewHolder.getNetworkImageView().setImageUrl(imgUrl, imageLoader);
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return dataSet.size();
@@ -112,7 +110,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
 
     public void clearList(){
         dataSet.clear();
-        notifyDataSetChanged(); // notifyItemRangeRemoved?
+        notifyDataSetChanged();
     }
 
     public void setMovieListLoader(MovieListLoader movieListLoader) {

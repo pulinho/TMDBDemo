@@ -32,7 +32,9 @@ public class MovieListLoader {
     private ArrayList<Integer> idList = new ArrayList<>();
 
     private MovieListAdapter adapter;
+
     private JsonObjectRequest pendingMovieDetailsRequest = null;
+    private JsonObjectRequest pendingMovieListRequest = null;
 
     private int movieDetailsRequestsSent = 0;
     private int movieDetailsRequestsSuccess = 0;
@@ -53,10 +55,13 @@ public class MovieListLoader {
         if(this.days == days) return;
         this.days = days;
 
-        //todo: ALSO FOR LIST
         if(pendingMovieDetailsRequest != null){
             pendingMovieDetailsRequest.cancel();
-            pendingMovieDetailsRequest = null; //?
+            pendingMovieDetailsRequest = null;
+        }
+        if(pendingMovieListRequest != null){
+            pendingMovieListRequest.cancel();
+            pendingMovieListRequest = null;
         }
 
         adapter.clearList();
@@ -68,7 +73,7 @@ public class MovieListLoader {
         page = 0;
         totalPages = 1;
 
-        //set start date
+        //set start date and end date for query
         TimeZone tz = TimeZone.getTimeZone("UTC");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
         df.setTimeZone(tz);
@@ -76,6 +81,7 @@ public class MovieListLoader {
         Calendar calendar=Calendar.getInstance();
         endDateString = df.format(calendar.getTime());
 
+        //substract number of days selected by user
         calendar.add(Calendar.DAY_OF_YEAR, -days);
         startDateString = df.format(calendar.getTime());
 
@@ -94,27 +100,28 @@ public class MovieListLoader {
         String url = CHANGES_BASE_URL + "?api_key=" + API_KEY + "&start_date=" + startDateString
                    + "&end_date=" + endDateString + "&page=" + page;
 
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+        pendingMovieListRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        parseResponse(response);
-                        if(pendingMovieDetailsRequest == null) requestNextMovieDetails(); // condition necessary?
+                        parseMovieListResponse(response);
+                        pendingMovieListRequest = null;
+                        requestNextMovieDetails();
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
+                        // TODO Handle errors
                         Log.d(TAG, "Get movie list error");
                     }
                 });
 
-        VolleySingleton.getInstance(null).addToRequestQueue(jsObjRequest);
+        VolleySingleton.getInstance(null).addToRequestQueue(pendingMovieListRequest);
     }
 
-    private void parseResponse(JSONObject response){
+    private void parseMovieListResponse(JSONObject response){
 
         JSONArray array;
         try {
@@ -150,7 +157,6 @@ public class MovieListLoader {
                     @Override
                     public void onResponse(JSONObject response) {
                         parseMovieDetailsAndAddToAdapter(response);
-                        movieDetailsRequestsSent++;
                         movieDetailsRequestsSuccess++;
                         requestNextMovieDetails();
                     }
@@ -159,13 +165,12 @@ public class MovieListLoader {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO Handle errors
-                        //Log.d(TAG, "Get movie details error");
-                        movieDetailsRequestsSent++;
                         requestNextMovieDetails();
                     }
                 });
 
         VolleySingleton.getInstance(null).addToRequestQueue(pendingMovieDetailsRequest);
+        movieDetailsRequestsSent++;
     }
 
     private void parseMovieDetailsAndAddToAdapter(JSONObject response){
@@ -184,8 +189,11 @@ public class MovieListLoader {
         adapter.addItemToList(details);
     }
 
-    public void compareMaxViewHolderPosition(int pos){
-        if(movieDetailsRequestsSuccess - 1 == pos && pendingMovieDetailsRequest == null) //todo ... -10 <= pos
+    // Gets current viewHolder position. If it's close enough to the list's current end and no other
+    // items are being loaded, the loader will request next page of the query.
+    public void notifyViewHolderPosition(int pos){
+        if(movieDetailsRequestsSuccess -10 <= pos && pendingMovieDetailsRequest == null
+                && pendingMovieListRequest==null)
             loadNextPage();
     }
 
